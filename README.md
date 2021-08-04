@@ -148,12 +148,15 @@ will need some scripting to interpret those files and extracts insights out
 of them.
 
 In this repository, you will find some sample output in `data/beam.prof`, 
-that you can use to check what the profiling output looks like.
+that you can use to check what the profiling output looks like. Use the 
+following Colab notebook with an example analyzing that sample profiling data:
+* https://colab.research.google.com/drive/1fmefgXctJWxyVv0_CXsQ9Hyfep488yfN#scrollTo=XvBvFs-fEcbh
 
 Refer to this post for more details about how to interpret that file:
 * https://medium.com/google-cloud/profiling-apache-beam-python-pipelines-d3cac8644fa4
 
-# License
+
+## License
 
 Copyright 2021 Israel Herraiz
 
