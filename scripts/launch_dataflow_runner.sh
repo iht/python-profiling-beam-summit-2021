@@ -15,7 +15,6 @@ python main.py --project=$PROJECT_ID \
  --region=$REGION \
  --streaming \
  --use_public_ips \
- --requirements_file ./requirements.txt \
  --setup_file ./setup.py \
  --temp_location=$TMP_LOCATION \
  --profile_cpu \
