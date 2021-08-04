@@ -3,6 +3,9 @@
 This repository contains a streaming Dataflow pipeline written in Python with
 Apache Beam, reading data from PubSub.
 
+For more details, see the following Beam Summit 2021 talk:
+* https://2021.beamsummit.org/sessions/profiling-python-pipelines/
+
 To run this pipeline, you need to have the SDK installed, and a project in 
 Google Cloud Platform, even if you run the pipeline locally with the direct 
 runner:
@@ -76,25 +79,12 @@ The destination tables must exist prior to running the pipeline.
 If you have the GCloud cli utility installed (for instance, it is installed
 by default in the Cloud Shell), you can create the tables from the command line.
 
-First create a dataset. Here we locate the dataset of name `scratch` in the EU,
-use a location similar to region of Dataflow, to avoid network egress costs.
+You need to create a BigQuery dataset too, in the same region:
+* https://cloud.google.com/bigquery/docs/datasets
 
-```bq mk -d --data_location=EU scratch```
+After that, you can create the destination tables with the provided script
 
-The schema of the rides table must match the schema of the PubSub messages
-(here we match the schema of the above public PubSub topic)
-
-```
-export SCHEMA=ride_id:STRING,point_idx:STRING,latitude:FLOAT,longitude:FLOAT,timestamp:STRING,meter_re
-ading:FLOAT,meter_increment:FLOAT,ride_status:STRING,passenger_count:INTEGER
-bq mk scratch.rides $SCHEMA
-```
-
-Same for the counts table:
-
-```
-bq mk scratch.counts ride_id:STRING,count:INTEGER,duration:FLOAT
-```
+`./scripts/create_tables.sh taxi_rides`
 
 ## Algorithm / business rules
 
@@ -119,3 +109,46 @@ windows in streaming pipelines. This grouping of messages across `ride_id` and
 event timestamps is automatically done by the pipeline, and we just need to
 express the generic operations to be performed with each window, as part of our
 pipeline.
+
+## Running the pipeline
+
+### Prerequirements
+
+You need to have a Google Cloud project, and the `gcloud` SDK configured to 
+run the pipeline. For instance, you could run it from the Cloud Shell in 
+Google Cloud Platform (`gcloud` would be automatically configured).
+
+Then you need to create a Google Cloud Storage bucket, with the same name as 
+your project id, and in the same region where you will run Dataflow:
+* https://cloud.google.com/storage/docs/creating-buckets
+
+Make sure that you have a Python environment with Python 3 (<3.9). For 
+instance a virtualenv, and install `apache-beam[gcp]` and `python-dateutil` 
+in your local environment. For instance, assuming that you are running in a 
+virtualenv:
+
+`pip install "apache-beam[gcp]" python-dateutil`
+
+### Run the pipeline
+
+Once the tables are created and the dependencies installed, edit 
+`scripts/launch_dataflow_runner.sh` and  set your project id and region, and 
+then run it with:
+
+`./scripts/launch_dataflow_runner.sh`
+
+The outputs will be written to the BigQuery tables, and in the `profile` 
+directory in your bucket you should see Python `gprof` files with profiling 
+information.
+
+## CPU profiling
+
+Beam uses the Python profiler to produce files in Python `gprof` format. You 
+will need some scripting to interpret those files and extracts insights out 
+of them.
+
+In this repository, you will find some sample output in `data/beam.prof`, 
+that you can use to check what the profiling output looks like.
+
+Refer to this post for more details about how to interpret that file:
+* https://medium.com/google-cloud/profiling-apache-beam-python-pipelines-d3cac8644fa4
