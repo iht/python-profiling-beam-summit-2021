@@ -5,6 +5,7 @@ Apache Beam, reading data from PubSub.
 
 For more details, see the following Beam Summit 2021 talk:
 * https://2021.beamsummit.org/sessions/profiling-python-pipelines/
+* [Slides in PDF](docs/beam_summit_2021_profiling_python_pipelines.pdf)
 
 To run this pipeline, you need to have the SDK installed, and a project in 
 Google Cloud Platform, even if you run the pipeline locally with the direct 
